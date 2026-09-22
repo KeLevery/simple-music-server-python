@@ -12,6 +12,7 @@ async def init_redis() -> Redis:
             settings.REDIS_URL,
             encoding="utf-8",
             decode_responses=True,
+            protocol=2,
         )
     return redis_client
 
@@ -19,7 +20,7 @@ async def close_redis():
     """关闭 Redis 连接池"""
     global redis_client
     if redis_client is not None:
-        await redis_client.close()
+        await redis_client.aclose()
         redis_client = None
 
 async def ping_redis() -> bool:
