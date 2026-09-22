@@ -30,7 +30,6 @@ server-python/
 │   ├── schemas/            # Pydantic 校验与数据传输对象 (DTO/VO)
 │   ├── services/           # 业务逻辑服务层 (Services)
 │   └── main.py             # FastAPI 应用入口与中间件配置
-├── docs/refactor/          # 迁移基线、API 契约、JWT 与数据库契约设计文档
 ├── tests/                  # 接口测试与兼容性回归测试套件
 ├── .env.example            # 环境变量配置模板
 ├── Dockerfile              # 容器化构建文件
@@ -130,14 +129,3 @@ docker build -t simple-music-server-python:latest .
 docker run -d -p 9080:9080 --env-file .env --name simple-music-server simple-music-server-python:latest
 ```
 
----
-
-## 📖 契约文档
-
-详细的 API 契约与平滑迁移设计请参阅 [`docs/refactor/`](docs/refactor/):
-- `00-baseline.md`: 迁移基线原则
-- `01-api-contract.md`: 全量接口契约与响应模型
-- `02-jwt-contract.md`: JWT 鉴权与 Redis 会话管理契约
-- `03-database-contract.md`: 数据库表结构与字段映射
-- `04-minio-contract.md`: MinIO 存储与路径规则
-- `05-migration-rules.md`: 迁移执行标准与规范

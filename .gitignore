@@ -61,3 +61,7 @@ dmypy.json
 *.swo
 *~
 .DS_Store
+
+# Internal Documentation (kept locally)
+docs/
+
