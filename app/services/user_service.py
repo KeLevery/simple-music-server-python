@@ -6,6 +6,7 @@ from app.core.constants import MessageConstant
 from app.core.response import Result, PageResult
 from app.core.security import hash_password
 from app.db.models.user import User
+from app.db.models.user_favorite import UserFavorite
 from app.schemas.admin import UserSearchDTO, UserAddDTO, UserDTO, UserManagementVO
 
 class UserService:
@@ -167,6 +168,10 @@ class UserService:
     @staticmethod
     async def delete_user(db: AsyncSession, user_id: int) -> Result[str]:
         """删除用户，对齐 Java UserServiceImpl.deleteUser"""
+        # 级联删除该用户的收藏记录
+        del_fav = delete(UserFavorite).where(UserFavorite.user_id == user_id)
+        await db.execute(del_fav)
+
         stmt = delete(User).where(User.id == user_id)
         res = await db.execute(stmt)
         if res.rowcount == 0:
@@ -179,6 +184,11 @@ class UserService:
         """批量删除用户，对齐 Java UserServiceImpl.deleteUsers"""
         if not user_ids:
             return Result.fail(MessageConstant.DELETE + MessageConstant.FAILED)
+
+        # 级联删除用户的收藏记录
+        del_fav = delete(UserFavorite).where(UserFavorite.user_id.in_(user_ids))
+        await db.execute(del_fav)
+
         stmt = delete(User).where(User.id.in_(user_ids))
         res = await db.execute(stmt)
         if res.rowcount == 0:

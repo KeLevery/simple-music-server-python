@@ -136,3 +136,26 @@ async def test_favorite_operations_lifecycle(async_client: AsyncClient):
     assert cancel_pl_res.status_code == 200
     assert cancel_pl_res.json()["code"] == 0
     assert cancel_pl_res.json()["message"] == "已取消收藏"
+
+@pytest.mark.asyncio
+async def test_collect_nonexistent_song_and_playlist(async_client: AsyncClient):
+    """测试收藏不存在的歌曲与歌单时返回错误提示"""
+    login_resp = await async_client.post("/user/login", json={
+        "email": EXISTING_USER_EMAIL,
+        "password": EXISTING_USER_PASSWORD_RAW
+    })
+    token = login_resp.json()["data"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 收藏不存在的歌曲
+    res_song = await async_client.post("/favorite/collectSong?songId=99999999", headers=headers)
+    assert res_song.status_code == 200
+    assert res_song.json()["code"] == 1
+    assert "不存在" in res_song.json()["message"]
+
+    # 收藏不存在的歌单
+    res_pl = await async_client.post("/favorite/collectPlaylist?playlistId=99999999", headers=headers)
+    assert res_pl.status_code == 200
+    assert res_pl.json()["code"] == 1
+    assert "不存在" in res_pl.json()["message"]
+

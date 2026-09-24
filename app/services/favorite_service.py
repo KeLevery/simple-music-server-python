@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlalchemy import select, func, delete
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.constants import MessageConstant
 from app.core.response import Result, PageResult
 from app.db.models.user_favorite import UserFavorite
 from app.db.models.song import Song
@@ -116,6 +117,11 @@ class FavoriteService:
         """
         收藏单曲
         """
+        # 校验目标歌曲是否存在
+        song_exists = await db.scalar(select(Song.id).where(Song.id == song_id))
+        if not song_exists:
+            return Result.fail(MessageConstant.SONG + MessageConstant.NOT_EXIST)
+
         stmt = select(func.count()).select_from(UserFavorite).where(
             UserFavorite.user_id == user_id,
             UserFavorite.type == 0,
@@ -153,6 +159,11 @@ class FavoriteService:
         """
         收藏歌单
         """
+        # 校验目标歌单是否存在
+        playlist_exists = await db.scalar(select(Playlist.id).where(Playlist.id == playlist_id))
+        if not playlist_exists:
+            return Result.fail(MessageConstant.PLAYLIST + MessageConstant.NOT_EXIST)
+
         stmt = select(func.count()).select_from(UserFavorite).where(
             UserFavorite.user_id == user_id,
             UserFavorite.type == 1,

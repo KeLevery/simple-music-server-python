@@ -124,6 +124,13 @@ class PlaylistService:
         if playlist.cover_url:
             delete_file(playlist.cover_url)
 
+        # 级联删除歌单收藏记录
+        del_fav = delete(UserFavorite).where(
+            UserFavorite.type == 1,
+            UserFavorite.playlist_id == playlist_id
+        )
+        await db.execute(del_fav)
+
         await db.delete(playlist)
         await db.commit()
         return Result.success(message=MessageConstant.DELETE + MessageConstant.SUCCESS)
@@ -139,6 +146,13 @@ class PlaylistService:
         for p in playlists:
             if p.cover_url:
                 delete_file(p.cover_url)
+
+        # 级联删除歌单收藏记录
+        del_fav = delete(UserFavorite).where(
+            UserFavorite.type == 1,
+            UserFavorite.playlist_id.in_(playlist_ids)
+        )
+        await db.execute(del_fav)
 
         del_stmt = delete(Playlist).where(Playlist.id.in_(playlist_ids))
         res = await db.execute(del_stmt)

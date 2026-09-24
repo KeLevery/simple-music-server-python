@@ -43,10 +43,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS 跨域中间件 (与 Spring Boot WebConfig 保持一致)
+# CORS 跨域中间件 (遵循标准凭据规范与白名单校验)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.CORS_ORIGINS,
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

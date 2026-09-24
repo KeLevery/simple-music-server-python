@@ -12,6 +12,12 @@ class Settings(BaseSettings):
     SERVER_PORT: int = 9080
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
+    CORS_ORIGINS: list[str] = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",
+    ]
 
     # MySQL Database
     DB_HOST: str = "127.0.0.1"

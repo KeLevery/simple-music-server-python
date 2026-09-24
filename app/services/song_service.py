@@ -213,6 +213,13 @@ class SongService:
         del_genre = delete(Genre).where(Genre.song_id == song_id)
         await db.execute(del_genre)
 
+        # 级联删除收藏记录
+        del_fav = delete(UserFavorite).where(
+            UserFavorite.type == 0,
+            UserFavorite.song_id == song_id
+        )
+        await db.execute(del_fav)
+
         await db.delete(song)
         await db.commit()
         return Result.success(message=MessageConstant.DELETE + MessageConstant.SUCCESS)
@@ -234,6 +241,13 @@ class SongService:
         # 删除 genre 关联
         del_genre = delete(Genre).where(Genre.song_id.in_(song_ids))
         await db.execute(del_genre)
+
+        # 级联删除收藏记录
+        del_fav = delete(UserFavorite).where(
+            UserFavorite.type == 0,
+            UserFavorite.song_id.in_(song_ids)
+        )
+        await db.execute(del_fav)
 
         del_songs = delete(Song).where(Song.id.in_(song_ids))
         res = await db.execute(del_songs)
